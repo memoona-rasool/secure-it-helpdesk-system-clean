@@ -78,15 +78,13 @@ def create_user_flow(current_user, role: str):
 
 
 def change_password_flow(current_user):
-    old_pw = prompt_password("Old password: ")
-    new_pw = prompt_password("New password: ")
+    from src.utils.validators import require_min_length, require_non_empty
 
     try:
+        old_pw = require_non_empty(prompt_password("Old password: "), "Old password")
+        new_pw = require_min_length(prompt_password("New password: "), "New password", 8)
+
         change_password(current_user, old_pw, new_pw)
         print("Password changed successfully")
     except Exception as e:
         print(f"Error: {e}")
-
-
-if __name__ == "__main__":
-    main()
