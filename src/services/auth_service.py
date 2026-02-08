@@ -43,3 +43,30 @@ def login(email: str, password: str) -> Optional[AuthUser]:
         email=str(row["email"]),
         role=str(row["role"]),
     )
+
+
+def create_user_as_admin(
+    current_user: AuthUser, name: str, email: str, password: str, role: str
+) -> int:
+    if current_user.role != "admin":
+        raise PermissionError("Only admin can create users")
+
+    if role not in {"user", "support", "admin"}:
+        raise ValueError("Invalid role")
+
+    password_hash = hash_password(password)
+    return users_repo.create_user(name, email, password_hash, role)
+
+def change_password(current_user: AuthUser, old_password: str, new_password: str) -> None:
+    row = users_repo.get_user_by_email(current_user.email)
+    if row is None:
+        raise ValueError("User not found")
+
+    if not verify_password(old_password, row["password_hash"]):
+        raise PermissionError("Old password is incorrect")
+
+    if len(new_password) < 8:
+        raise ValueError("New password must be at least 8 characters")
+
+    new_hash = hash_password(new_password)
+    users_repo.update_password_hash(current_user.id, new_hash)

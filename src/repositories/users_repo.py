@@ -47,3 +47,11 @@ def count_users() -> int:
         cur = conn.execute("SELECT COUNT(*) AS c FROM users")
         row = cur.fetchone()
         return int(row["c"])
+
+def update_password_hash(user_id: int, new_password_hash: str) -> None:
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE users SET password_hash = ? WHERE id = ?",
+            (new_password_hash, user_id),
+        )
+        conn.commit()
