@@ -25,4 +25,23 @@ def init_db() -> None:
             );
             """
         )
+
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tickets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                description TEXT NOT NULL,
+                status TEXT NOT NULL CHECK(status IN ('open', 'in_progress', 'resolved', 'closed')),
+                priority TEXT NOT NULL CHECK(priority IN ('low', 'medium', 'high', 'urgent')),
+                created_by INTEGER NOT NULL,
+                assigned_to INTEGER,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY(created_by) REFERENCES users(id),
+                FOREIGN KEY(assigned_to) REFERENCES users(id)
+            );
+            """
+        )
+
         conn.commit()

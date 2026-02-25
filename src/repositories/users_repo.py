@@ -56,3 +56,34 @@ def update_password_hash(user_id: int, new_password_hash: str) -> None:
             (new_password_hash, user_id),
         )
         conn.commit()
+
+
+def list_users() -> list[sqlite3.Row]:
+    with get_connection() as conn:
+        cur = conn.execute(
+            """
+            SELECT id, name, email, role, created_at, last_login
+            FROM users
+            ORDER BY id ASC
+            """
+        )
+        return cur.fetchall()
+
+
+def get_user_by_id(user_id: int) -> Optional[sqlite3.Row]:
+    with get_connection() as conn:
+        cur = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+        return cur.fetchone()
+
+
+def count_admins() -> int:
+    with get_connection() as conn:
+        cur = conn.execute("SELECT COUNT(*) AS c FROM users WHERE role = 'admin'")
+        row = cur.fetchone()
+        return int(row["c"])
+
+
+def delete_user_by_id(user_id: int) -> None:
+    with get_connection() as conn:
+        conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        conn.commit()

@@ -77,3 +77,26 @@ def change_password(current_user: AuthUser, old_password: str, new_password: str
 
     new_hash = hash_password(new_pw)
     users_repo.update_password_hash(current_user.id, new_hash)
+
+
+def list_users_as_admin(current_user: AuthUser):
+    if current_user.role != "admin":
+        raise PermissionError("Only admin can list users")
+    return users_repo.list_users()
+
+
+def delete_user_as_admin(current_user: AuthUser, user_id: int) -> None:
+    if current_user.role != "admin":
+        raise PermissionError("Only admin can delete users")
+
+    if user_id == current_user.id:
+        raise ValueError("You cannot delete your own account while logged in")
+
+    row = users_repo.get_user_by_id(user_id)
+    if row is None:
+        raise ValueError("User not found")
+
+    if row["role"] == "admin" and users_repo.count_admins() <= 1:
+        raise ValueError("Cannot delete the last admin account")
+
+    users_repo.delete_user_by_id(user_id)
