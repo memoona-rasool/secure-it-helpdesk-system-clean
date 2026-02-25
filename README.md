@@ -27,3 +27,17 @@ python3 -m src.app
 Default admin login:
 Email: admin@local
 Password: admin12345
+
+## Screenshots
+
+### Admin Menu
+![Admin Menu](screenshots/admin-menu.png)
+
+### Create Ticket
+![Create Ticket](screenshots/create-ticket.png)
+
+### User Tickets
+![User Tickets](screenshots/user-tickets.png)
+
+### Admin View All Tickets
+![Admin Tickets](screenshots/admin-all-tickets.png)
